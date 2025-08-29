@@ -5,7 +5,8 @@
   "description": "Read YouTube subtitles using Google Text-to-Speech.",
   "permissions": ["storage", "scripting", "activeTab"],
   "host_permissions": [
-    "https://*.googleapis.com/*"
+    "https://*.googleapis.com/*",
+    "https://www.youtube.com/*"
   ],
   "background": {
     "service_worker": "background.js"

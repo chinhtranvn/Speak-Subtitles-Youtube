@@ -1,10 +1,13 @@
 # Speak-Subtitles-Youtube
 
 Chrome extension that reads YouTube subtitles aloud using Google Cloud
-Text-to-Speech and optionally translates captions before speaking.
+Text-to-Speech. It fetches caption tracks directly so it works even when
+YouTube's subtitle display is turned off. If a track in your configured
+language is unavailable it can translate captions before speaking.
 
-Subtitles are read sequentially and the extension adjusts video playback
-speed to maintain sync with spoken captions.
+Subtitles are spoken sequentially without overlap. The extension adjusts
+both voice speed and video playback rate so the audio, text, and video
+stay synchronized.
 
 ## Development
 

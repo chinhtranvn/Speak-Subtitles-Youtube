@@ -11,14 +11,14 @@ async function translateText(text, target, key) {
   return data.data?.translations?.[0]?.translatedText || text;
 }
 
-async function synthesizeSpeech(text, settings) {
+async function synthesizeSpeech(text, settings, rate) {
   const body = {
     input: { text },
     voice: { languageCode: settings.language, name: settings.voice },
     audioConfig: {
       audioEncoding: 'MP3',
       pitch: settings.pitch,
-      speakingRate: 1.0,
+      speakingRate: rate || 1.0,
       volumeGainDb: settings.volume
     }
   };
@@ -35,7 +35,8 @@ chrome.runtime.onMessage.addListener((msg, sender, sendResponse) => {
   if (msg.type === 'speak') {
     chrome.storage.sync.get(null, async settings => {
       let text = msg.text;
-      if (settings.translate) {
+      const shouldTranslate = msg.translate ?? settings.translate;
+      if (shouldTranslate) {
         try {
           text = await translateText(text, settings.language, settings.apiKey);
         } catch (e) {
@@ -43,7 +44,7 @@ chrome.runtime.onMessage.addListener((msg, sender, sendResponse) => {
         }
       }
       try {
-        const url = await synthesizeSpeech(text, settings);
+        const url = await synthesizeSpeech(text, settings, msg.rate);
         sendResponse({ url });
       } catch (e) {
         console.error('TTS failed', e);
