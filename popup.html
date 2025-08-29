@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8" />
+  <title>SpeakSub Settings</title>
+</head>
+<body>
+  <h2>Google TTS Settings</h2>
+
+  <label>API Key: <input id="apiKey" type="text" /></label><br/><br/>
+  <label>Language:
+    <select id="language">
+      <option value="vi-VN">vi-VN</option>
+      <option value="en-US">en-US</option>
+    </select>
+  </label><br/><br/>
+
+  <label>Translate if mismatch: <input id="translate" type="checkbox" checked /></label><br/><br/>
+
+  <label>Voice:
+    <select id="voiceName"></select>
+  </label><br/><br/>
+
+  <label>Pitch: <input id="pitch" type="range" min="-20" max="20" step="1" /></label><br/>
+  <label>Volume: <input id="volume" type="range" min="-96" max="16" step="1" /></label><br/>
+  <label>Speech Rate: <input id="speechRate" type="range" min="0.25" max="4" step="0.01" /></label><br/>
+  <label>Min Rate: <input id="minRate" type="number" step="0.01" /></label><br/>
+  <label>Max Rate: <input id="maxRate" type="number" step="0.01" /></label><br/><br/>
+
+  <button id="save">Save</button>
+  <script type="module" src="popup.js"></script>
+</body>
+</html>
