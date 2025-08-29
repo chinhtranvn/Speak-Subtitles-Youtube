@@ -9,8 +9,16 @@ chrome.runtime.onInstalled.addListener(async () => {
 chrome.action.onClicked.addListener(async (tab) => {
   const enabled = !(await getEnabled());
   await saveSettings({ ...(await getSettings()), enabled });
+  const url = tab.url || "";
+  const canAccess = /^https?:/.test(url);
+  if (!canAccess) return;
+
   if (enabled) {
-    chrome.scripting.executeScript({ target: { tabId: tab.id }, files: ["content.js"] });
+    try {
+      await chrome.scripting.executeScript({ target: { tabId: tab.id }, files: ["content.js"] });
+    } catch (e) {
+      console.error("Failed to inject content script", e);
+    }
   } else {
     chrome.tabs.sendMessage(tab.id, { type: "DISABLE" }).catch(() => {});
   }
