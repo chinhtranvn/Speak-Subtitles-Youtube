@@ -1,0 +1,23 @@
+{
+  "manifest_version": 3,
+  "name": "Speak Subtitles",
+  "version": "1.0",
+  "description": "Read YouTube subtitles using Google TTS",
+  "permissions": ["storage", "scripting", "activeTab"],
+  "host_permissions": ["https://*.googleapis.com/*"],
+  "action": {
+    "default_title": "Speak Subtitles"
+  },
+  "background": {
+    "service_worker": "background.js",
+    "type": "module"
+  },
+  "options_page": "popup.html",
+  "content_scripts": [
+    {
+      "matches": ["https://www.youtube.com/*"],
+      "js": ["content.js"],
+      "run_at": "document_idle"
+    }
+  ]
+}

@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Speak Subtitles Settings</title>
+</head>
+<body>
+  <div>
+    <label>Google API Key <input id="apiKey" type="text"></label>
+  </div>
+  <div>
+    <label>Language <select id="language">
+      <option value="vi-VN">vi-VN</option>
+      <option value="en-US">en-US</option>
+      <option value="ja-JP">ja-JP</option>
+    </select></label>
+  </div>
+  <div>
+    <label><input type="checkbox" id="translate"> Translate subtitle if language mismatch</label>
+  </div>
+  <div>
+    <label>Voice <select id="voice">
+      <option value="vi-VN-Standard-A">vi-VN-Standard-A</option>
+      <option value="vi-VN-Standard-B">vi-VN-Standard-B</option>
+      <option value="en-US-Standard-C">en-US-Standard-C</option>
+    </select></label>
+  </div>
+  <div>
+    <label>Pitch <input id="pitch" type="range" min="-20" max="20" step="1"></label>
+    <span id="pitchVal"></span>
+  </div>
+  <div>
+    <label>Volume <input id="volume" type="range" min="0" max="2" step="0.1"></label>
+    <span id="volumeVal"></span>
+  </div>
+  <div>
+    <label>Speech Rate <input id="speechRate" type="range" min="0.5" max="2" step="0.1"></label>
+    <span id="rateVal"></span>
+  </div>
+  <div>
+    <label>Min Rate <input id="minRate" type="number" step="0.1"></label>
+  </div>
+  <div>
+    <label>Max Rate <input id="maxRate" type="number" step="0.1"></label>
+  </div>
+  <button id="save">Save</button>
+  <script type="module" src="popup.js"></script>
+</body>
+</html>
