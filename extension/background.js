@@ -7,7 +7,13 @@ async function translateText(text, target, key) {
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ q: text, target })
   });
+  if (!res.ok) {
+    throw new Error(`Translate request failed: ${res.status}`);
+  }
   const data = await res.json();
+  if (data.error?.message) {
+    throw new Error(data.error.message);
+  }
   return data.data?.translations?.[0]?.translatedText || text;
 }
 
@@ -27,28 +33,38 @@ async function synthesizeSpeech(text, settings, rate) {
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(body)
   });
+  if (!res.ok) {
+    throw new Error(`TTS request failed: ${res.status}`);
+  }
   const data = await res.json();
+  if (data.error?.message) {
+    throw new Error(data.error.message);
+  }
   return data.audioContent ? `data:audio/mp3;base64,${data.audioContent}` : null;
 }
 
 chrome.runtime.onMessage.addListener((msg, sender, sendResponse) => {
   if (msg.type === 'speak') {
     chrome.storage.sync.get(null, async settings => {
+      if (!settings.apiKey) {
+        sendResponse({ error: 'Missing API key' });
+        return;
+      }
+      if (!settings.voice) {
+        sendResponse({ error: 'No voice selected' });
+        return;
+      }
       let text = msg.text;
       const shouldTranslate = msg.translate ?? settings.translate;
-      if (shouldTranslate) {
-        try {
-          text = await translateText(text, settings.language, settings.apiKey);
-        } catch (e) {
-          console.error('Translation failed', e);
-        }
-      }
       try {
+        if (shouldTranslate) {
+          text = await translateText(text, settings.language, settings.apiKey);
+        }
         const url = await synthesizeSpeech(text, settings, msg.rate);
         sendResponse({ url });
       } catch (e) {
-        console.error('TTS failed', e);
-        sendResponse({ url: null });
+        console.error('TTS pipeline failed', e);
+        sendResponse({ url: null, error: e.message });
       }
     });
     return true; // keep the message channel open for async response

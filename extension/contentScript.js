@@ -2,7 +2,7 @@ const defaultSettings = {
   apiKey: '',
   language: 'en-US',
   translate: false,
-  voice: '',
+  voice: 'en-US-Wavenet-D',
   pitch: 0,
   volume: 1,
   minRate: 0.9,
@@ -50,19 +50,28 @@ function fetchCaptions() {
   nextCaption = 0;
   const playerResponse = window.ytInitialPlayerResponse;
   const tracks = playerResponse?.captions?.playerCaptionsTracklistRenderer?.captionTracks;
-  if (!tracks || tracks.length === 0) return;
-  let track = tracks.find(t => t.languageCode === settings.language);
-  let translate = false;
-  if (!track) {
-    track = tracks[0];
-    translate = true;
+  if (tracks && tracks.length) {
+    let track = tracks.find(t => t.languageCode === settings.language);
+    let translate = false;
+    if (!track) {
+      track = tracks[0];
+      translate = true;
+    }
+    fetch(track.baseUrl + '&fmt=vtt')
+      .then(r => r.text())
+      .then(vtt => {
+        captions = parseVTT(vtt).map(c => ({ ...c, translate }));
+      })
+      .catch(e => console.error('Failed to load captions', e));
+  } else if (currentVideoId) {
+    const url = `https://www.youtube.com/api/timedtext?v=${currentVideoId}&lang=${settings.language}&fmt=vtt`;
+    fetch(url)
+      .then(r => (r.ok ? r.text() : Promise.reject(new Error('No captions'))))
+      .then(vtt => {
+        captions = parseVTT(vtt).map(c => ({ ...c, translate: false }));
+      })
+      .catch(e => console.error('Failed to load captions', e));
   }
-  fetch(track.baseUrl + '&fmt=vtt')
-    .then(r => r.text())
-    .then(vtt => {
-      captions = parseVTT(vtt).map(c => ({ ...c, translate }));
-    })
-    .catch(e => console.error('Failed to load captions', e));
 }
 
 function checkVideo() {
@@ -96,7 +105,20 @@ function processQueue() {
   const caption = subtitleQueue.shift();
   speaking = true;
   const needTranslate = caption.translate || settings.translate;
+  if (!settings.apiKey) {
+    alert('Missing Google API key');
+    speaking = false;
+    processQueue();
+    return;
+  }
   chrome.runtime.sendMessage({ type: 'speak', text: caption.text, rate: 1, translate: needTranslate }, response => {
+    if (response?.error) {
+      console.error(response.error);
+      alert(response.error);
+      speaking = false;
+      processQueue();
+      return;
+    }
     if (response?.url) {
       const audio = new Audio(response.url);
       audio.volume = settings.volume ?? 1;
@@ -133,4 +155,5 @@ loadSettings(() => {
   checkVideo();
   setInterval(checkVideo, 1000);
   setInterval(checkCaptions, 200);
+  document.addEventListener('yt-navigate-finish', checkVideo);
 });

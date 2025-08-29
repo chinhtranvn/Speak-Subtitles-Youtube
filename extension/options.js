@@ -33,7 +33,7 @@ function restoreOptions() {
     document.getElementById('apiKey').value = items.apiKey || '';
     document.getElementById('language').value = items.language || 'en-US';
     document.getElementById('translate').checked = items.translate || false;
-    document.getElementById('voice').value = items.voice || '';
+    document.getElementById('voice').value = items.voice;
     document.getElementById('pitch').value = items.pitch ?? 0;
     document.getElementById('volume').value = items.volume ?? 1;
     document.getElementById('minRate').value = items.minRate ?? 0.9;
