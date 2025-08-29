@@ -1,0 +1,8 @@
+{
+  "name": "speak-subtitles-youtube",
+  "version": "0.1.0",
+  "description": "Chrome extension to read YouTube subtitles via Google TTS",
+  "scripts": {
+    "test": "echo 'No tests specified'"
+  }
+}

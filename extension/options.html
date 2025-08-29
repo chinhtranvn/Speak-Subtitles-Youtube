@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Speak Subtitles Options</title>
+  <link rel="stylesheet" href="options.css" />
+</head>
+<body>
+  <h1>Speak Subtitles Settings</h1>
+  <form id="settings-form">
+    <label>Google API Key
+      <input type="text" id="apiKey" />
+    </label>
+    <label>Language (e.g. vi-VN)
+      <input type="text" id="language" />
+    </label>
+    <label>
+      <input type="checkbox" id="translate" />
+      Translate subtitles before reading
+    </label>
+    <label>Voice Name
+      <input type="text" id="voice" />
+    </label>
+    <label>Pitch
+      <input type="number" step="0.1" id="pitch" />
+    </label>
+    <label>Volume Gain (0-1)
+      <input type="number" step="0.1" id="volume" />
+    </label>
+    <label>Min Playback Rate
+      <input type="number" step="0.1" id="minRate" />
+    </label>
+    <label>Max Playback Rate
+      <input type="number" step="0.1" id="maxRate" />
+    </label>
+    <button type="submit">Save</button>
+  </form>
+  <div id="status"></div>
+  <script src="options.js"></script>
+</body>
+</html>
