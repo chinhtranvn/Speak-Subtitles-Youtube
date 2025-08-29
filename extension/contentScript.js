@@ -8,6 +8,10 @@ function loadSettings() {
   chrome.storage.sync.get(defaultSettings, s => { settings = s; });
 }
 
+const subtitleQueue = [];
+let speaking = false;
+let lastSubtitleEndTime = performance.now();
+
 function observeSubtitles() {
   const target = document.querySelector('.ytp-caption-window-container');
   if (!target) return;
@@ -15,24 +19,42 @@ function observeSubtitles() {
     mutations.forEach(m => {
       m.addedNodes.forEach(node => {
         const text = node.innerText?.trim();
-        if (text) speakText(text);
+        if (text) enqueueSubtitle(text);
       });
     });
   });
   observer.observe(target, { childList: true, subtree: true });
 }
 
-async function speakText(text) {
-  const start = performance.now();
+function enqueueSubtitle(text) {
+  const timestamp = performance.now();
+  adjustPlayback(lastSubtitleEndTime - timestamp);
+  subtitleQueue.push({ text, timestamp });
+  processQueue();
+}
+
+function processQueue() {
+  if (speaking || subtitleQueue.length === 0) return;
+  const { text } = subtitleQueue.shift();
+  speaking = true;
   chrome.runtime.sendMessage({ type: 'speak', text }, response => {
     if (response?.url) {
       const audio = new Audio(response.url);
       audio.volume = settings.volume ?? 1;
-      audio.play();
-      audio.addEventListener('ended', () => {
-        const diff = performance.now() - start - audio.duration * 1000;
-        adjustPlayback(diff);
+      audio.addEventListener('loadedmetadata', () => {
+        lastSubtitleEndTime = performance.now() + audio.duration * 1000;
       });
+      audio.addEventListener('ended', () => {
+        lastSubtitleEndTime = performance.now();
+        speaking = false;
+        adjustPlayback(0);
+        processQueue();
+      });
+      audio.play();
+    } else {
+      lastSubtitleEndTime = performance.now();
+      speaking = false;
+      processQueue();
     }
   });
 }
