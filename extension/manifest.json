@@ -3,7 +3,7 @@
   "name": "Speak Subtitles",
   "version": "0.1.0",
   "description": "Read YouTube subtitles using Google Text-to-Speech.",
-  "permissions": ["storage", "scripting", "activeTab"],
+  "permissions": ["storage", "scripting"],
   "host_permissions": [
     "https://*.googleapis.com/*",
     "https://www.youtube.com/*"
